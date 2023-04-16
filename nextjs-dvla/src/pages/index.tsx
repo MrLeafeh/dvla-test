@@ -5,7 +5,32 @@ import styles from "@/styles/Home.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export const getStaticProps = async () => {
+  const request = fetch(
+    "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
+    {
+      body: `{ "registrationNumber": "AA19AAA" }`,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Api-Key": "EX3qAg1Yjy6yWucSx5vRX1XGIGs4uce78AzU8SE9",
+      },
+      mode: "no-cors",
+      method: "POST",
+    }
+  );
+  const dvlaData = await request.then((response) => {
+    if (!response.ok) {
+      throw new Error("fetch error", { cause: response?.status });
+    }
+    return response.json();
+  });
+
+  return { props: { dvlaData } };
+};
+
+export default function Home({ dvlaData }: { dvlaData: any }) {
+  console.log({ dvlaData });
+
   return (
     <>
       <Head>
@@ -20,7 +45,7 @@ export default function Home() {
             Get started by editing&nbsp;
             <code className={styles.code}>src/pages/index.tsx</code>
           </p>
-
+          <code>{dvlaData.colour}</code>
           <div>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
